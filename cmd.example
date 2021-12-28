@@ -6,6 +6,7 @@
     "commands": [
         ["add_user", "{{guac_newuser_user}}", "{{guac_newuser_pass}}"],
         ["add_vnc_connection", "{{guac_conn_name}}", "{{guac_conn_addr}}", "{{guac_conn_port}}", "{{guac_conn_pass}}"],
-        ["pair_user_connection", "{{guac_newuser_user}}", "{{guac_conn_name}}"]
+        ["pair_user_connection", "{{guac_newuser_user}}", "{{guac_conn_name}}"],
+        ["nop", "does nothing, just makes it easy to have loops build your template, with a nop you don't have to worry about not putting a comma at the end of your last command"]
     ]
 }

@@ -164,6 +164,16 @@ class GuacConnection:
         raise RuntimeError("Connection not found")
 
     @Command.register
+    def nop(self, *args, **kwargs):
+        """
+        Useful when a template language doesn't have a good way to leave
+        the last comma off the command list.  Now you can put that comma
+        after your last actual command and stick in a nop with no comma
+        afterwards
+        """
+        pass
+
+    @Command.register
     @require_token
     def add_user(self, username, password):
         print("Creating user: {}".format(username))
