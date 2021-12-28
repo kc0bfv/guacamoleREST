@@ -1,0 +1,11 @@
+{
+    "server": "{{guac_addr}}",
+    "admin_user": "{{guac_admin_user}}",
+    "initial_admin_pass": "{{guac_admin_pass}}",
+    "desired_admin_pass": "{{guac_admin_pass_new}}",
+    "commands": [
+        ["add_user", "{{guac_newuser_user}}", "{{guac_newuser_pass}}"],
+        ["add_vnc_connection", "{{guac_conn_name}}", "{{guac_conn_addr}}", "{{guac_conn_port}}", "{{guac_conn_pass}}"],
+        ["pair_user_connection", "{{guac_newuser_user}}", "{{guac_conn_name}}"]
+    ]
+}
