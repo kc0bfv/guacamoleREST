@@ -8,6 +8,8 @@ import argparse
 import json
 import urllib.parse
 import urllib.request
+import socket
+import time
 
 def require_token(func):
     def wrapper(self, *args, **kwargs):
@@ -40,6 +42,7 @@ class GuacConnection:
         self.token = None
         self.dataSource = None
         self.timeout = 5
+        self.max_wait = 6
 
     def get_url(self, api_point, url_dict=None, add_token=True):
         if url_dict is None:
@@ -49,6 +52,20 @@ class GuacConnection:
         if add_token:
             cur_url = urllib.parse.urljoin(cur_url, "?token={}".format(self.token))
         return cur_url
+
+    def wait_on_server(self):
+        print("Beginning to wait for server")
+        req = urllib.request.Request(self.get_url("/"))
+        for i in range(self.max_wait):
+            try:
+                urllib.request.urlopen(req, timeout=self.timeout).close()
+                break
+            except urllib.error.URLError as e:
+                if (not isinstance(e.reason, socket.timeout)) and e.reason.errno != 111:
+                    break
+            print("Continuing waiting: {} of {}".format(i+1, self.max_wait))
+            time.sleep(5)
+        print("Finished waiting for server")
 
     def init_guac(self, desired_pass):
         """
@@ -366,6 +383,7 @@ class CommandFile:
 
     def run(self):
         self.guac = GuacConnection(self.server, self.admin_user, self.initial_admin_pass)
+        self.guac.wait_on_server()
         self.guac.init_guac(self.desired_admin_pass)
 
         for command in self.commands:
