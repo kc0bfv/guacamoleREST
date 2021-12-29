@@ -53,7 +53,7 @@ class GuacConnection:
             cur_url = urllib.parse.urljoin(cur_url, "?token={}".format(self.token))
         return cur_url
 
-    def wait_on_server(self):
+    def wait_on_server(self, add_delay=False):
         print("Beginning to wait for server")
         req = urllib.request.Request(self.get_url("/"))
         for i in range(self.max_wait):
@@ -66,6 +66,11 @@ class GuacConnection:
             print("Continuing waiting: {} of {}".format(i+1, self.max_wait))
             time.sleep(5)
         print("Finished waiting for server")
+
+        if add_delay:
+            print("Doing additional 10 second delay, then re-waiting for server")
+            time.sleep(10)
+            self.wait_on_server()
 
     def init_guac(self, desired_pass):
         """
@@ -371,19 +376,20 @@ class GuacConnection:
 
 
 class CommandFile:
-    def __init__(self, cmd_file):
+    def __init__(self, cmd_file, delay=False):
         settings = json.loads(cmd_file.read())
         self.server = settings["server"]
         self.admin_user = settings["admin_user"]
         self.initial_admin_pass = settings["initial_admin_pass"]
         self.desired_admin_pass = settings["desired_admin_pass"]
+        self.delay = delay
         self.commands = [
             Command(line[0], line[1:]) for line in settings["commands"]
         ]
 
     def run(self):
         self.guac = GuacConnection(self.server, self.admin_user, self.initial_admin_pass)
-        self.guac.wait_on_server()
+        self.guac.wait_on_server(add_delay=self.delay)
         self.guac.init_guac(self.desired_admin_pass)
 
         for command in self.commands:
@@ -393,6 +399,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Configure an Apache Guacamole server")
     parser.add_argument("cmdfile", nargs="?", type=argparse.FileType("r"),
         default="-")
+    parser.add_argument("--delay", action="store_true",
+        help="Wait 10 seconds after detecting the connection is available to make sure Guacamole is ready.")
     args = parser.parse_args()
-    cf = CommandFile(args.cmdfile)
+    cf = CommandFile(args.cmdfile, args.delay)
     cf.run()
