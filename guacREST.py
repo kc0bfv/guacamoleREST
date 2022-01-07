@@ -68,8 +68,8 @@ class GuacConnection:
         print("Finished waiting for server")
 
         if add_delay:
-            print("Doing additional 60 second delay, then re-waiting for server")
-            time.sleep(60)
+            print("Doing additional 120 second delay, then re-waiting for server")
+            time.sleep(120)
             self.wait_on_server()
 
     def init_guac(self, desired_pass):
@@ -400,7 +400,7 @@ if __name__ == "__main__":
     parser.add_argument("cmdfile", nargs="?", type=argparse.FileType("r"),
         default="-")
     parser.add_argument("--delay", action="store_true",
-        help="Wait 60 seconds after detecting the connection is available to make sure Guacamole is ready.")
+        help="Wait 120 seconds after detecting the connection is available to make sure Guacamole is ready.")
     args = parser.parse_args()
     cf = CommandFile(args.cmdfile, args.delay)
     cf.run()
