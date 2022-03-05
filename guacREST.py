@@ -2,9 +2,14 @@
 
 """
 Based on API reference at https://github.com/ridvanaltun/guacamole-rest-api-documentation
+
+To use this, simply run the file with a "--help" option.
+
+To improve upon this, well, you need to know a little more.  The CommandFile class is the main handler, facilitating parsing of the command file, and executing the commands.  The meat of the code is in GuacConnection though.  The commands are implemented and described there.
 """
 
 import argparse
+from functools import wraps
 import json
 import urllib.parse
 import urllib.request
@@ -12,6 +17,10 @@ import socket
 import time
 
 def require_token(func):
+    """
+    Validates that the self object has a token set on it, thus ensuring that the object has retrieved a token as part of the login process.
+    """
+    @wraps(func)
     def wrapper(self, *args, **kwargs):
         if self.token is None:
             raise RuntimeError("Token not set!")
@@ -20,22 +29,43 @@ def require_token(func):
     return wrapper
 
 class Command:
+    """
+    Defines a command from the command file, keeps track of known commands, and understands how to call the underlying code from a command specified in the command file
+    """
     registered = dict()
     def __init__(self, command, args):
+        """
+        Initialize the Command - takes a command name and a list of arguments.  The result may be executed using the execute function and by passing an initialized GuacConnection
+        """
         self.command = command
         self.args = args
     @classmethod
     def register(cls, func):
+        """
+        This decorator registers a function name from a GuacConnection function and remembers it, so it can be called from the command file by name
+        """
         fname = func.__name__
         if fname in cls.registered:
             raise RuntimeError("Function already registered: {}".format(fname))
         cls.registered[fname] = func
         return func
     def execute(self, target):
+        """
+        Executes a command against a target GuacConnection object
+
+        :param target: the initialized GuacConnection to execute upon
+        """
         return self.registered[self.command](target, *self.args)
 
 class GuacConnection:
     def __init__(self, urlbase, admin_user="guacadmin", admin_pass="guacadmin"):
+        """
+        Initialize the GuacConnection object.  After this, initialize the connection by running the init_guac function.
+
+        :param urlbase: the base URL for the guac server
+        :param admin_user: the admin username for the guac server, typically "guacadmin"
+        :param admin_pass: the initial password for the guac admin, typically "guacadmin".  During init_guac, GuacConnection will try this password first, and if it succeeds init_guac will change the password immediately.  If admin_pass fails, then init_guac will try the desired final admin password automatically.  That way, a command file can run multiple times without needing to worry about the current state of the admin password.
+        """
         self.urlbase = urlbase
         self.admin_user = admin_user
         self.admin_pass = admin_pass
@@ -44,7 +74,13 @@ class GuacConnection:
         self.timeout = 5
         self.max_wait = 6
 
-    def get_url(self, api_point, url_dict=None, add_token=True):
+    def _get_url(self, api_point, url_dict=None, add_token=True):
+        """
+        Returns a url based on the settings, api_point, and token
+        :param api_point: the action within the API to return a URL for
+        :param url_dict: an optional dictionary of parameters that can get inserted into the api_point string
+        :param add_token: if true, adds in the authentication token
+        """
         if url_dict is None:
             url_dict = dict()
         cur_url = urllib.parse.urljoin(self.urlbase, api_point)
@@ -54,8 +90,11 @@ class GuacConnection:
         return cur_url
 
     def wait_on_server(self, add_delay=False):
+        """
+        Waits for the server to respond, then if add_delay is set waits an additional period
+        """
         print("Beginning to wait for server")
-        req = urllib.request.Request(self.get_url("/"))
+        req = urllib.request.Request(self._get_url("/"))
         for i in range(self.max_wait):
             try:
                 urllib.request.urlopen(req, timeout=self.timeout).close()
@@ -76,19 +115,20 @@ class GuacConnection:
         """
         Initialize the Guacamole connection by getting a token and setting
         a new administrator password.
+        :param desired_pass: the desired password to set
         """
-        if self.get_token():
-            if self.change_password(self.admin_user, self.admin_pass, desired_pass):
+        if self._get_token():
+            if self._change_password(self.admin_user, self.admin_pass, desired_pass):
                 self.admin_pass = desired_pass
             else:
                 raise RuntimeError("Changing the administrator password failed")
         else:
-            if self.get_token(desired_pass):
+            if self._get_token(desired_pass):
                 self.admin_pass = desired_pass
             else:
                 raise RuntimeError("Failed to authenticate with original and new passwords")
 
-    def get_token(self, try_pass=None):
+    def _get_token(self, try_pass=None):
         """
         Generally you don't need this - generally you want to use init_guac.
 
@@ -109,7 +149,7 @@ class GuacConnection:
         data_str = "username={}&password={}".format(self.admin_user, try_pass)
 
         # Convert formats for Python
-        dest = self.get_url(api_point, add_token=False)
+        dest = self._get_url(api_point, add_token=False)
         data = data_str.encode("ascii")
 
         req = urllib.request.Request(dest, data, headers, method=api_method)
@@ -130,7 +170,7 @@ class GuacConnection:
         return True
 
     @require_token
-    def change_password(self, username, old_password, new_password):
+    def _change_password(self, username, old_password, new_password):
         print("Changing password for: {}".format(username))
 
         # API Properties
@@ -142,7 +182,7 @@ class GuacConnection:
         data_dict = {"oldPassword": old_password, "newPassword": new_password}
 
         # Convert formats for Python
-        dest = self.get_url(api_point, {"username": username})
+        dest = self._get_url(api_point, {"username": username})
         data = json.dumps(data_dict).encode("ascii")
 
         req = urllib.request.Request(dest, data, headers, method=api_method)
@@ -155,7 +195,10 @@ class GuacConnection:
             raise RuntimeError("Returned: {}".format(output.decode("utf-8")))
 
     @require_token
-    def get_connection_id(self, conn_name):
+    def _get_connection_id(self, conn_name):
+        """
+        Gets the ID of a connection based on it's name
+        """
         print("Getting connection ID: {}".format(conn_name))
 
         # API Properties
@@ -167,7 +210,7 @@ class GuacConnection:
         # None
 
         # Convert formats for Python
-        dest = self.get_url(api_point)
+        dest = self._get_url(api_point)
 
         req = urllib.request.Request(dest, None, headers, method=api_method)
         try:
@@ -188,16 +231,23 @@ class GuacConnection:
     @Command.register
     def nop(self, *args, **kwargs):
         """
-        Useful when a template language doesn't have a good way to leave
-        the last comma off the command list.  Now you can put that comma
-        after your last actual command and stick in a nop with no comma
-        afterwards
+        Command - nop.  Does nothing.  It's useful when you're using Ansible or something automated to create the command file, and the template language is running through a list and doesn't have a good way to leave the last comma off the command list.  With nop you can let it create that list with the last comma, then you can put in a nop with no comma afterwards.
+
+            ["nop"]
         """
         pass
 
     @Command.register
     @require_token
     def add_user(self, username, password):
+        """
+        Command - add a Guacamole user.  Example command entry:
+
+            ["add_user", "username", "password"]
+
+        :param username: the Guacamole user name
+        :param password: the user password
+        """
         print("Creating user: {}".format(username))
 
         # API Properties
@@ -224,7 +274,7 @@ class GuacConnection:
         }
 
         # Convert formats for Python
-        dest = self.get_url(api_point)
+        dest = self._get_url(api_point)
         data = json.dumps(data_dict).encode("ascii")
 
         req = urllib.request.Request(dest, data, headers, method=api_method)
@@ -249,6 +299,16 @@ class GuacConnection:
     @Command.register
     @require_token
     def add_vnc_connection(self, name, host, port, password):
+        """
+        Command - create a VNC connection.  Example command entry:
+
+            ["add_vnc_connection", "connection name", "connection_host", 80, "password"]
+
+        :param name: the connection to pair the user to
+        :param host: the hostname or address of the VNC server
+        :param port: the port the VNC server is running on
+        :param password: the VNC server password
+        """
         print("Creating vnc connection: {}".format(name))
 
         # API Properties
@@ -307,7 +367,7 @@ class GuacConnection:
         }
 
         # Convert formats for Python
-        dest = self.get_url(api_point)
+        dest = self._get_url(api_point)
         data = json.dumps(data_dict).encode("ascii")
 
         req = urllib.request.Request(dest, data, headers, method=api_method)
@@ -332,10 +392,18 @@ class GuacConnection:
     @Command.register
     @require_token
     def pair_user_connection(self, username, conn_name):
+        """
+        Command - pair a user with a connection.  Example command entry:
+
+            ["pair_user_connection", "user", "connection"]
+
+        :param username: the username to pair up
+        :param conn_name: the connection to pair the user to
+        """
         print("Pairing user with connection: {}:{}".format(username, conn_name))
 
         # First get the connection ID from the name
-        conn_id = self.get_connection_id(conn_name)
+        conn_id = self._get_connection_id(conn_name)
 
         # API Properties
         api_point = "/api/session/data/{dataSource}/users/{username}/permissions"
@@ -352,7 +420,7 @@ class GuacConnection:
         ]
 
         # Convert formats for Python
-        dest = self.get_url(api_point, {"username": username})
+        dest = self._get_url(api_point, {"username": username})
         data = json.dumps(data_dict).encode("ascii")
 
         req = urllib.request.Request(dest, data, headers, method=api_method)
@@ -374,9 +442,30 @@ class GuacConnection:
         else:
             raise RuntimeError("Returned: {}".format(output_str))
 
-
 class CommandFile:
+    """
+    Parses and runs the command file.  Expects the file to contain one json object with keys "server", "admin_user", "initial_admin_pass", "desired_admin_pass", and "commands".  Each must have a value that's a string, except "commands" which has a list.
+
+    server: the URL of the server to connect to, like "https://example.com:4000/"
+    admin_user: the username of the admin user, often "guacadmin"
+    initial_admin_pass: the original password of the admin user, which will change as soon as possible, often "guacadmin"
+    desired_admin_pass: the desired password of the admin user, which gets changed early then can be used on subsequent executions automatically
+    commands: a json list of commands
+
+    Commands are also json lists, with a varying number of elements depending on the command.  Commands are defined in the GuacConnection class, and their parameters are documented there.  An example commands list is:
+
+    [
+        ["add_user", "user_one", "user_one_password"],
+        ["add_vnc_connection", "kali_one", "10.1.1.15", 5901, "vnc_pass"],
+        ["pair_user_connection", "user_one", "kali_one"]
+    ]
+    """
+
     def __init__(self, cmd_file, delay=False):
+        """
+        :param cmd_file: an open command file that can be read-from
+        :param delay: instructs the GuacConnection to delay for a period
+        """
         settings = json.loads(cmd_file.read())
         self.server = settings["server"]
         self.admin_user = settings["admin_user"]
@@ -388,6 +477,9 @@ class CommandFile:
         ]
 
     def run(self):
+        """
+        Execute the commands in the command file
+        """
         self.guac = GuacConnection(self.server, self.admin_user, self.initial_admin_pass)
         self.guac.wait_on_server(add_delay=self.delay)
         self.guac.init_guac(self.desired_admin_pass)

@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module guacREST</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>guacREST</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/finity/Documents/Code/guacamoleREST/guacREST.py">/home/finity/Documents/Code/guacamoleREST/guacREST.py</a></font></td></tr></table>
+    <p><tt>Based&nbsp;on&nbsp;API&nbsp;reference&nbsp;at&nbsp;<a href="https://github.com/ridvanaltun/guacamole-rest-api-documentation">https://github.com/ridvanaltun/guacamole-rest-api-documentation</a><br>
+&nbsp;<br>
+To&nbsp;use&nbsp;this,&nbsp;simply&nbsp;run&nbsp;the&nbsp;file&nbsp;with&nbsp;a&nbsp;"--help"&nbsp;option.<br>
+&nbsp;<br>
+To&nbsp;improve&nbsp;upon&nbsp;this,&nbsp;well,&nbsp;you&nbsp;need&nbsp;to&nbsp;know&nbsp;a&nbsp;little&nbsp;more.&nbsp;&nbsp;The&nbsp;<a href="#CommandFile">CommandFile</a>&nbsp;class&nbsp;is&nbsp;the&nbsp;main&nbsp;handler,&nbsp;facilitating&nbsp;parsing&nbsp;of&nbsp;the&nbsp;command&nbsp;file,&nbsp;and&nbsp;executing&nbsp;the&nbsp;commands.&nbsp;&nbsp;The&nbsp;meat&nbsp;of&nbsp;the&nbsp;code&nbsp;is&nbsp;in&nbsp;<a href="#GuacConnection">GuacConnection</a>&nbsp;though.&nbsp;&nbsp;The&nbsp;commands&nbsp;are&nbsp;implemented&nbsp;and&nbsp;described&nbsp;there.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="argparse.html">argparse</a><br>
+<a href="json.html">json</a><br>
+</td><td width="25%" valign=top><a href="socket.html">socket</a><br>
+<a href="time.html">time</a><br>
+</td><td width="25%" valign=top><a href="urllib.html">urllib</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="builtins.html#object">builtins.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="guacREST.html#Command">Command</a>
+</font></dt><dt><font face="helvetica, arial"><a href="guacREST.html#CommandFile">CommandFile</a>
+</font></dt><dt><font face="helvetica, arial"><a href="guacREST.html#GuacConnection">GuacConnection</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Command">class <strong>Command</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Command">Command</a>(command,&nbsp;args)<br>
+&nbsp;<br>
+Defines&nbsp;a&nbsp;command&nbsp;from&nbsp;the&nbsp;command&nbsp;file,&nbsp;keeps&nbsp;track&nbsp;of&nbsp;known&nbsp;commands,&nbsp;and&nbsp;understands&nbsp;how&nbsp;to&nbsp;call&nbsp;the&nbsp;underlying&nbsp;code&nbsp;from&nbsp;a&nbsp;command&nbsp;specified&nbsp;in&nbsp;the&nbsp;command&nbsp;file<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Command-__init__"><strong>__init__</strong></a>(self, command, args)</dt><dd><tt>Initialize&nbsp;the&nbsp;<a href="#Command">Command</a>&nbsp;-&nbsp;takes&nbsp;a&nbsp;command&nbsp;name&nbsp;and&nbsp;a&nbsp;list&nbsp;of&nbsp;arguments.&nbsp;&nbsp;The&nbsp;result&nbsp;may&nbsp;be&nbsp;executed&nbsp;using&nbsp;the&nbsp;execute&nbsp;function&nbsp;and&nbsp;by&nbsp;passing&nbsp;an&nbsp;initialized&nbsp;<a href="#GuacConnection">GuacConnection</a></tt></dd></dl>
+
+<dl><dt><a name="Command-execute"><strong>execute</strong></a>(self, target)</dt><dd><tt>Executes&nbsp;a&nbsp;command&nbsp;against&nbsp;a&nbsp;target&nbsp;<a href="#GuacConnection">GuacConnection</a>&nbsp;<a href="builtins.html#object">object</a><br>
+&nbsp;<br>
+:param&nbsp;target:&nbsp;the&nbsp;initialized&nbsp;<a href="#GuacConnection">GuacConnection</a>&nbsp;to&nbsp;execute&nbsp;upon</tt></dd></dl>
+
+<hr>
+Class methods defined here:<br>
+<dl><dt><a name="Command-register"><strong>register</strong></a>(func)<font color="#909090"><font face="helvetica, arial"> from <a href="builtins.html#type">builtins.type</a></font></font></dt><dd><tt>This&nbsp;decorator&nbsp;registers&nbsp;a&nbsp;function&nbsp;name&nbsp;from&nbsp;a&nbsp;<a href="#GuacConnection">GuacConnection</a>&nbsp;function&nbsp;and&nbsp;remembers&nbsp;it,&nbsp;so&nbsp;it&nbsp;can&nbsp;be&nbsp;called&nbsp;from&nbsp;the&nbsp;command&nbsp;file&nbsp;by&nbsp;name</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>registered</strong> = {'add_user': &lt;function GuacConnection.add_user&gt;, 'add_vnc_connection': &lt;function GuacConnection.add_vnc_connection&gt;, 'nop': &lt;function GuacConnection.nop&gt;, 'pair_user_connection': &lt;function GuacConnection.pair_user_connection&gt;}</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="CommandFile">class <strong>CommandFile</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#CommandFile">CommandFile</a>(cmd_file,&nbsp;delay=False)<br>
+&nbsp;<br>
+Parses&nbsp;and&nbsp;runs&nbsp;the&nbsp;command&nbsp;file.&nbsp;&nbsp;Expects&nbsp;the&nbsp;file&nbsp;to&nbsp;contain&nbsp;one&nbsp;json&nbsp;<a href="builtins.html#object">object</a>&nbsp;with&nbsp;keys&nbsp;"server",&nbsp;"admin_user",&nbsp;"initial_admin_pass",&nbsp;"desired_admin_pass",&nbsp;and&nbsp;"commands".&nbsp;&nbsp;Each&nbsp;must&nbsp;have&nbsp;a&nbsp;value&nbsp;that's&nbsp;a&nbsp;string,&nbsp;except&nbsp;"commands"&nbsp;which&nbsp;has&nbsp;a&nbsp;list.<br>
+&nbsp;<br>
+server:&nbsp;the&nbsp;URL&nbsp;of&nbsp;the&nbsp;server&nbsp;to&nbsp;connect&nbsp;to,&nbsp;like&nbsp;"<a href="https://example.com:4000/">https://example.com:4000/</a>"<br>
+admin_user:&nbsp;the&nbsp;username&nbsp;of&nbsp;the&nbsp;admin&nbsp;user,&nbsp;often&nbsp;"guacadmin"<br>
+initial_admin_pass:&nbsp;the&nbsp;original&nbsp;password&nbsp;of&nbsp;the&nbsp;admin&nbsp;user,&nbsp;which&nbsp;will&nbsp;change&nbsp;as&nbsp;soon&nbsp;as&nbsp;possible,&nbsp;often&nbsp;"guacadmin"<br>
+desired_admin_pass:&nbsp;the&nbsp;desired&nbsp;password&nbsp;of&nbsp;the&nbsp;admin&nbsp;user,&nbsp;which&nbsp;gets&nbsp;changed&nbsp;early&nbsp;then&nbsp;can&nbsp;be&nbsp;used&nbsp;on&nbsp;subsequent&nbsp;executions&nbsp;automatically<br>
+commands:&nbsp;a&nbsp;json&nbsp;list&nbsp;of&nbsp;commands<br>
+&nbsp;<br>
+Commands&nbsp;are&nbsp;also&nbsp;json&nbsp;lists,&nbsp;with&nbsp;a&nbsp;varying&nbsp;number&nbsp;of&nbsp;elements&nbsp;depending&nbsp;on&nbsp;the&nbsp;command.&nbsp;&nbsp;Commands&nbsp;are&nbsp;defined&nbsp;in&nbsp;the&nbsp;<a href="#GuacConnection">GuacConnection</a>&nbsp;class,&nbsp;and&nbsp;their&nbsp;parameters&nbsp;are&nbsp;documented&nbsp;there.&nbsp;&nbsp;An&nbsp;example&nbsp;commands&nbsp;list&nbsp;is:<br>
+&nbsp;<br>
+[<br>
+&nbsp;&nbsp;&nbsp;&nbsp;["add_user",&nbsp;"user_one",&nbsp;"user_one_password"],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;["add_vnc_connection",&nbsp;"kali_one",&nbsp;"10.1.1.15",&nbsp;5901,&nbsp;"vnc_pass"],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;["pair_user_connection",&nbsp;"user_one",&nbsp;"kali_one"]<br>
+]<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="CommandFile-__init__"><strong>__init__</strong></a>(self, cmd_file, delay=False)</dt><dd><tt>:param&nbsp;cmd_file:&nbsp;an&nbsp;open&nbsp;command&nbsp;file&nbsp;that&nbsp;can&nbsp;be&nbsp;read-from<br>
+:param&nbsp;delay:&nbsp;instructs&nbsp;the&nbsp;<a href="#GuacConnection">GuacConnection</a>&nbsp;to&nbsp;delay&nbsp;for&nbsp;a&nbsp;period</tt></dd></dl>
+
+<dl><dt><a name="CommandFile-run"><strong>run</strong></a>(self)</dt><dd><tt>Execute&nbsp;the&nbsp;commands&nbsp;in&nbsp;the&nbsp;command&nbsp;file</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="GuacConnection">class <strong>GuacConnection</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#GuacConnection">GuacConnection</a>(urlbase,&nbsp;admin_user='guacadmin',&nbsp;admin_pass='guacadmin')<br>
+&nbsp;<br>
+<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="GuacConnection-__init__"><strong>__init__</strong></a>(self, urlbase, admin_user='guacadmin', admin_pass='guacadmin')</dt><dd><tt>Initialize&nbsp;the&nbsp;<a href="#GuacConnection">GuacConnection</a>&nbsp;<a href="builtins.html#object">object</a>.&nbsp;&nbsp;After&nbsp;this,&nbsp;initialize&nbsp;the&nbsp;connection&nbsp;by&nbsp;running&nbsp;the&nbsp;init_guac&nbsp;function.<br>
+&nbsp;<br>
+:param&nbsp;urlbase:&nbsp;the&nbsp;base&nbsp;URL&nbsp;for&nbsp;the&nbsp;guac&nbsp;server<br>
+:param&nbsp;admin_user:&nbsp;the&nbsp;admin&nbsp;username&nbsp;for&nbsp;the&nbsp;guac&nbsp;server,&nbsp;typically&nbsp;"guacadmin"<br>
+:param&nbsp;admin_pass:&nbsp;the&nbsp;initial&nbsp;password&nbsp;for&nbsp;the&nbsp;guac&nbsp;admin,&nbsp;typically&nbsp;"guacadmin".&nbsp;&nbsp;During&nbsp;init_guac,&nbsp;<a href="#GuacConnection">GuacConnection</a>&nbsp;will&nbsp;try&nbsp;this&nbsp;password&nbsp;first,&nbsp;and&nbsp;if&nbsp;it&nbsp;succeeds&nbsp;init_guac&nbsp;will&nbsp;change&nbsp;the&nbsp;password&nbsp;immediately.&nbsp;&nbsp;If&nbsp;admin_pass&nbsp;fails,&nbsp;then&nbsp;init_guac&nbsp;will&nbsp;try&nbsp;the&nbsp;desired&nbsp;final&nbsp;admin&nbsp;password&nbsp;automatically.&nbsp;&nbsp;That&nbsp;way,&nbsp;a&nbsp;command&nbsp;file&nbsp;can&nbsp;run&nbsp;multiple&nbsp;times&nbsp;without&nbsp;needing&nbsp;to&nbsp;worry&nbsp;about&nbsp;the&nbsp;current&nbsp;state&nbsp;of&nbsp;the&nbsp;admin&nbsp;password.</tt></dd></dl>
+
+<dl><dt><a name="GuacConnection-add_user"><strong>add_user</strong></a>(self, username, password)</dt><dd><tt><a href="#Command">Command</a>&nbsp;-&nbsp;add&nbsp;a&nbsp;Guacamole&nbsp;user.&nbsp;&nbsp;Example&nbsp;command&nbsp;entry:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;["add_user",&nbsp;"username",&nbsp;"password"]<br>
+&nbsp;<br>
+:param&nbsp;username:&nbsp;the&nbsp;Guacamole&nbsp;user&nbsp;name<br>
+:param&nbsp;password:&nbsp;the&nbsp;user&nbsp;password</tt></dd></dl>
+
+<dl><dt><a name="GuacConnection-add_vnc_connection"><strong>add_vnc_connection</strong></a>(self, name, host, port, password)</dt><dd><tt><a href="#Command">Command</a>&nbsp;-&nbsp;create&nbsp;a&nbsp;VNC&nbsp;connection.&nbsp;&nbsp;Example&nbsp;command&nbsp;entry:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;["add_vnc_connection",&nbsp;"connection&nbsp;name",&nbsp;"connection_host",&nbsp;80,&nbsp;"password"]<br>
+&nbsp;<br>
+:param&nbsp;name:&nbsp;the&nbsp;connection&nbsp;to&nbsp;pair&nbsp;the&nbsp;user&nbsp;to<br>
+:param&nbsp;host:&nbsp;the&nbsp;hostname&nbsp;or&nbsp;address&nbsp;of&nbsp;the&nbsp;VNC&nbsp;server<br>
+:param&nbsp;port:&nbsp;the&nbsp;port&nbsp;the&nbsp;VNC&nbsp;server&nbsp;is&nbsp;running&nbsp;on<br>
+:param&nbsp;password:&nbsp;the&nbsp;VNC&nbsp;server&nbsp;password</tt></dd></dl>
+
+<dl><dt><a name="GuacConnection-init_guac"><strong>init_guac</strong></a>(self, desired_pass)</dt><dd><tt>Initialize&nbsp;the&nbsp;Guacamole&nbsp;connection&nbsp;by&nbsp;getting&nbsp;a&nbsp;token&nbsp;and&nbsp;setting<br>
+a&nbsp;new&nbsp;administrator&nbsp;password.<br>
+:param&nbsp;desired_pass:&nbsp;the&nbsp;desired&nbsp;password&nbsp;to&nbsp;set</tt></dd></dl>
+
+<dl><dt><a name="GuacConnection-nop"><strong>nop</strong></a>(self, *args, **kwargs)</dt><dd><tt><a href="#Command">Command</a>&nbsp;-&nbsp;nop.&nbsp;&nbsp;Does&nbsp;nothing.&nbsp;&nbsp;It's&nbsp;useful&nbsp;when&nbsp;you're&nbsp;using&nbsp;Ansible&nbsp;or&nbsp;something&nbsp;automated&nbsp;to&nbsp;create&nbsp;the&nbsp;command&nbsp;file,&nbsp;and&nbsp;the&nbsp;template&nbsp;language&nbsp;is&nbsp;running&nbsp;through&nbsp;a&nbsp;list&nbsp;and&nbsp;doesn't&nbsp;have&nbsp;a&nbsp;good&nbsp;way&nbsp;to&nbsp;leave&nbsp;the&nbsp;last&nbsp;comma&nbsp;off&nbsp;the&nbsp;command&nbsp;list.&nbsp;&nbsp;With&nbsp;nop&nbsp;you&nbsp;can&nbsp;let&nbsp;it&nbsp;create&nbsp;that&nbsp;list&nbsp;with&nbsp;the&nbsp;last&nbsp;comma,&nbsp;then&nbsp;you&nbsp;can&nbsp;put&nbsp;in&nbsp;a&nbsp;nop&nbsp;with&nbsp;no&nbsp;comma&nbsp;afterwards.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;["nop"]</tt></dd></dl>
+
+<dl><dt><a name="GuacConnection-pair_user_connection"><strong>pair_user_connection</strong></a>(self, username, conn_name)</dt><dd><tt><a href="#Command">Command</a>&nbsp;-&nbsp;pair&nbsp;a&nbsp;user&nbsp;with&nbsp;a&nbsp;connection.&nbsp;&nbsp;Example&nbsp;command&nbsp;entry:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;["pair_user_connection",&nbsp;"user",&nbsp;"connection"]<br>
+&nbsp;<br>
+:param&nbsp;username:&nbsp;the&nbsp;username&nbsp;to&nbsp;pair&nbsp;up<br>
+:param&nbsp;conn_name:&nbsp;the&nbsp;connection&nbsp;to&nbsp;pair&nbsp;the&nbsp;user&nbsp;to</tt></dd></dl>
+
+<dl><dt><a name="GuacConnection-wait_on_server"><strong>wait_on_server</strong></a>(self, add_delay=False)</dt><dd><tt>Waits&nbsp;for&nbsp;the&nbsp;server&nbsp;to&nbsp;respond,&nbsp;then&nbsp;if&nbsp;add_delay&nbsp;is&nbsp;set&nbsp;waits&nbsp;an&nbsp;additional&nbsp;period</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-require_token"><strong>require_token</strong></a>(func)</dt><dd><tt>Validates&nbsp;that&nbsp;the&nbsp;self&nbsp;<a href="builtins.html#object">object</a>&nbsp;has&nbsp;a&nbsp;token&nbsp;set&nbsp;on&nbsp;it,&nbsp;thus&nbsp;ensuring&nbsp;that&nbsp;the&nbsp;<a href="builtins.html#object">object</a>&nbsp;has&nbsp;retrieved&nbsp;a&nbsp;token&nbsp;as&nbsp;part&nbsp;of&nbsp;the&nbsp;login&nbsp;process.</tt></dd></dl>
+</td></tr></table>
+</body></html>
