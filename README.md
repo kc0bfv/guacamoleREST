@@ -16,4 +16,4 @@ This is really intended for use with Ansible.  You can create a command file wit
 
 ## Additional Documentation
 
-The commands are documented as part of the CommandFile and GuacConnection classes in the [Python documentation](guacREST.html)
+The commands are documented as part of the CommandFile and GuacConnection classes in the [Python documentation](guacREST.txt)

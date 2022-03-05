@@ -1,2 +1,2 @@
-docs:
-	python3 -m pydoc -w ./guacREST.py
+guacREST.txt: guacREST.py
+	python3 -m pydoc ./$< > $@
